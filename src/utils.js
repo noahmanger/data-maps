@@ -1,8 +1,9 @@
 import { sheetsBaseUrl, rootURL } from "./constants";
 
-export const buildSheetsURL = (tab, sheetsID)  => (`${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`);
+export const buildSheetsURL = (tab, sheetsID) =>
+  `${sheetsBaseUrl}/${sheetsID}/${tab}/public/basic?alt=json`;
 
-export const buildMapURL = map => (`${rootURL}/${map}.json`);
+export const buildMapURL = map => `${rootURL}/${map}.json`;
 
 export const parseRow = row => {
   // Takes a string and converts it into an object with keys for each column
@@ -14,15 +15,15 @@ export const parseRow = row => {
     pieces[key] = Number.isNaN(Number(value)) ? value : Number(value);
   });
   return pieces;
-}
+};
 
 export const formatAsPercentage = value => {
   if (isNaN(value)) {
     return value;
   }
-  const percentage = value * 100;
+  const percentage = value <= 1 ? value * 100 : value;
   return `${percentage.toFixed(0)}%`;
-}
+};
 
 export const parseStats = data => {
   const cleanStats = [];
@@ -32,4 +33,12 @@ export const parseStats = data => {
     cleanStats.push(row);
   });
   return cleanStats;
-}
+};
+
+export const floatOrNull = num => (isNaN(parseFloat(num)) ? null : parseFloat(num));
+
+export const makeLabel = text => {
+  let formatted = text.replace(/-/g, " ");
+  formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  return formatted;
+};

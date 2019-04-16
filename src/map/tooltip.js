@@ -1,41 +1,47 @@
 import { select } from "d3";
-import marked from "marked";
 import { formatAsPercentage } from "../utils";
-import { excludedKeys, labelMap } from "../constants";
 import { prefix } from "../constants";
 
 // Tooltip
 let tooltip;
 
-const getTooltipKeys = data => {
-  return Object.keys(data).filter(k => excludedKeys.indexOf(k) === -1);
-}
+const getPosition = e => {
+  const visPosition = document.querySelectorAll(`.${prefix}vis`)[0].getBoundingClientRect();
+  const bodyPosition = document.body.getBoundingClientRect();
+  return {
+    x: e.pageX - 20 - visPosition.left,
+    y: e.pageY + 20 - visPosition.top + bodyPosition.top
+  };
+};
 
-const createTooltipContent = data => {
-  let content = `<strong>${data.label}</strong>`;
-  content += "<table><tbody>";
-  const keys = getTooltipKeys(data);
-  keys.forEach(key => {
-    if (key !== "content") {
-      content += `<tr><td>${labelMap[key]}</td><td>${formatAsPercentage(data[key])}</td></tr>`;
-    }
-  });
-  content += "</tbody></table>";
-  if (data.content) {
-    content += `<p class="details-content">${marked(data.content)}</p>`;
-  }
-
+const createTooltipContent = (data, filter) => {
+  let content = `<strong>${data.label}:</strong> `;
+  content += `${formatAsPercentage(data[filter])}`;
   return content;
-}
+};
 
-export const addTooltip = d => {
-  tooltip.html(createTooltipContent(d));
-}
+const handleMouseMove = e => {
+  const position = getPosition(e);
+  tooltip.style("left", `${position.x}px`).style("top", `${position.y}px`);
+};
 
-export const removeTooltip = d => {
-  tooltip.selectAll("*").remove();
-}
+export const addTooltip = (d, filter) => {
+  tooltip.style("display", "block").html(createTooltipContent(d, filter));
+};
+
+export const removeTooltip = () => {
+  tooltip
+    .style("display", "none")
+    .selectAll("*")
+    .remove();
+};
 
 export const initTooltip = container => {
-  tooltip = select(container).select(`.${prefix}details`).append("p");
-}
+  tooltip = select(container)
+    .select(`.${prefix}vis`)
+    .append("div")
+    .attr("class", `${prefix}tooltip`)
+    .style("display", "none");
+
+  document.addEventListener("mousemove", handleMouseMove);
+};
