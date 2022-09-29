@@ -30,7 +30,7 @@
     "sass": "^1.17.3"
   },
   "dependencies": {
-    "d3": "^5.9.2",
+    "d3": "^7.6.1",
     "marked": "^0.6.1",
     "parcel-plugin-static-files-copy": "^2.0.0",
     "topojson": "^3.0.2"
